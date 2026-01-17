@@ -1,0 +1,51 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+build/
+flutter_*.symlinks/
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+.vscode/
+
+# Flutter/Dart environment
+.env
+.env.*
+
+# iOS/macOS
+**/Pods/
+**/.symlinks/
+**/DerivedData/
+**/Runner/GeneratedPluginRegistrant.*
+
+# Android
+**/gradle-wrapper.jar
+**/local.properties
+**/.gradle/
+**/captures/
+**/outputs/
+**/GeneratedPluginRegistrant.java
+
+# Web
+lib/generated_plugin_registrant.dart
+
+# Coverage
+coverage/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+
+# FVM (if used)
+.fvm/
+.flutter_sdk
