@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.callsense.app'
-    compileSdkVersion 34
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.callsense.app'
