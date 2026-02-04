@@ -22,8 +22,8 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "getCallLogs" -> {
-                        val fromMillis = call.argument<Long>("fromMillis") ?: 0L
-                        val toMillis = call.argument<Long>("toMillis") ?: System.currentTimeMillis()
+                        val fromMillis = (call.argument<Number>("fromMillis"))?.toLong() ?: 0L
+                        val toMillis = (call.argument<Number>("toMillis"))?.toLong() ?: System.currentTimeMillis()
                         try {
                             val logs = queryCallLogs(contentResolver, fromMillis, toMillis)
                             result.success(logs)
@@ -142,10 +142,10 @@ class MainActivity : FlutterActivity() {
             account.id == phoneAccountId &&
                 account.componentName.flattenToString() == phoneAccountComponent
         }
-        if (handle != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (handle != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val phoneAccount = telecomManager.getPhoneAccount(handle)
             val extras = phoneAccount?.extras
-            val subId = extras?.getInt(TelecomManager.EXTRA_SUBSCRIPTION_ID, -1) ?: -1
+            val subId = extras?.getInt("android.telecom.extra.SUBSCRIPTION_ID", -1) ?: -1
             if (subId != -1) {
                 val simSlotIndex =
                     SubscriptionManager.getSlotIndex(subId).takeIf { it >= 0 } ?: 0
