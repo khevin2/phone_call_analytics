@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.callsense.app'
-    compileSdkVersion 34
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.callsense.app'
@@ -20,6 +20,11 @@ android {
         release {
             signingConfig signingConfigs.debug
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {

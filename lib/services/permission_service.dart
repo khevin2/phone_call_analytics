@@ -3,7 +3,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PermissionStatusState {
-  const PermissionStatusState({required this.hasPermissions, required this.limitedMode});
+  const PermissionStatusState({
+    required this.hasPermissions,
+    required this.limitedMode,
+  });
 
   final bool hasPermissions;
   final bool limitedMode;
@@ -11,16 +14,24 @@ class PermissionStatusState {
 
 const _limitedModeKey = 'limitedModeEnabled';
 
-final permissionStateProvider = FutureProvider<PermissionStatusState>((ref) async {
+final permissionStateProvider = FutureProvider<PermissionStatusState>((
+  ref,
+) async {
   final phone = await Permission.phone.status;
+  final callLog = await Permission
+      .phone
+      .status; // READ_CALL_LOG is part of phone permission group
   final prefs = await SharedPreferences.getInstance();
   final limitedMode = prefs.getBool(_limitedModeKey) ?? false;
-  return PermissionStatusState(hasPermissions: phone.isGranted, limitedMode: limitedMode);
+  return PermissionStatusState(
+    hasPermissions: phone.isGranted,
+    limitedMode: limitedMode,
+  );
 });
 
 class PermissionService {
   Future<bool> requestCorePermissions() async {
-    final statuses = await [Permission.phone].request();
+    final statuses = await [Permission.phone, Permission.contacts].request();
     return statuses.values.every((status) => status.isGranted);
   }
 

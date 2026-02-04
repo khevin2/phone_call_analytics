@@ -37,7 +37,7 @@ class AnalyticsService {
   AnalyticsSummary buildSummary(List<CallRecord> calls) {
     final totalCalls = calls.length;
     final totalDuration = calls.fold<int>(0, (sum, call) => sum + call.durationSec);
-    final averageDuration = totalCalls == 0 ? 0 : totalDuration / totalCalls;
+    final double averageDuration = totalCalls == 0 ? 0 : totalDuration / totalCalls;
     final breakdown = <CallType, int>{};
     for (final call in calls) {
       breakdown.update(call.type, (value) => value + 1, ifAbsent: () => 1);
