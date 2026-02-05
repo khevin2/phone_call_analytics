@@ -260,7 +260,7 @@ class _FiltersBar extends StatelessWidget {
                       start = DateTime(now.year, now.month, 1);
                       end = now;
                     case DateFilterPreset.allTime:
-                      start = DateTime(2000, 1, 1);
+                      start = allTimeStartDate;
                       end = now;
                     case DateFilterPreset.custom:
                       break;

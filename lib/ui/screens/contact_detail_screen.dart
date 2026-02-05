@@ -17,6 +17,18 @@ class ContactDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Handle empty calls list
+    if (calls.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(name?.isNotEmpty == true ? name! : number),
+        ),
+        body: const Center(
+          child: Text('No call history available'),
+        ),
+      );
+    }
+
     // Sort calls by timestamp descending (most recent first)
     final sortedCalls = List<CallRecord>.from(calls)
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
