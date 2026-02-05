@@ -60,9 +60,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       await _loadAnalytics();
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Sync failed: $error')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sync failed: $error'),
+          ),
+        );
       }
     }
   }
