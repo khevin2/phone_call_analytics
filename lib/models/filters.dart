@@ -1,4 +1,4 @@
-enum DateFilterPreset { today, last7, last30, last90, thisMonth, custom }
+enum DateFilterPreset { today, last7, last30, last90, thisMonth, allTime, custom }
 
 enum SimFilter { all, sim1, sim2, unknown }
 

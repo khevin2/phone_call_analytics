@@ -14,6 +14,7 @@ import '../../services/providers.dart';
 import '../../services/sync_service.dart';
 import '../widgets/chart_card.dart';
 import '../widgets/summary_card.dart';
+import 'contact_detail_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -258,6 +259,9 @@ class _FiltersBar extends StatelessWidget {
                     case DateFilterPreset.thisMonth:
                       start = DateTime(now.year, now.month, 1);
                       end = now;
+                    case DateFilterPreset.allTime:
+                      start = DateTime(2000, 1, 1);
+                      end = now;
                     case DateFilterPreset.custom:
                       break;
                   }
@@ -301,6 +305,7 @@ class _FiltersBar extends StatelessWidget {
       DateFilterPreset.last30 => 'Last 30 days',
       DateFilterPreset.last90 => 'Last 90 days',
       DateFilterPreset.thisMonth => 'This month',
+      DateFilterPreset.allTime => 'All time',
       DateFilterPreset.custom => 'Custom range',
     };
   }
@@ -555,6 +560,17 @@ class _TopTab extends StatelessWidget {
             title: Text(name?.isNotEmpty == true ? name! : entry.key),
             subtitle: Text('${entry.value.length} calls · ${duration ~/ 60} min'),
             trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ContactDetailScreen(
+                    number: entry.key,
+                    name: name,
+                    calls: entry.value,
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
