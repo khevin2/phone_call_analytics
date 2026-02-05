@@ -66,9 +66,7 @@ class ContactDetailScreen extends StatelessWidget {
                       CircleAvatar(
                         radius: 30,
                         child: Text(
-                          (name?.isNotEmpty == true ? name! : number)
-                              .substring(0, 1)
-                              .toUpperCase(),
+                          _getAvatarInitial(name, number),
                           style: const TextStyle(fontSize: 24),
                         ),
                       ),
@@ -114,44 +112,45 @@ class ContactDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Longest call highlight
-          Card(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.emoji_events,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    size: 32,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Longest Call',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${_formatDuration(longestCall.durationSec)} on ${dateFormatter.format(longestCall.timestamp)} at ${timeFormatter.format(longestCall.timestamp)}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ],
+          // Longest call highlight - only show if there's a call with duration > 0
+          if (longestCall.durationSec > 0)
+            Card(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.emoji_events,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      size: 32,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Longest Call',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_formatDuration(longestCall.durationSec)} on ${dateFormatter.format(longestCall.timestamp)} at ${timeFormatter.format(longestCall.timestamp)}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           const SizedBox(height: 24),
           // Call history header
           Text(
@@ -161,14 +160,17 @@ class ContactDetailScreen extends StatelessWidget {
           const SizedBox(height: 8),
           // Call history list
           ...sortedCalls.map((call) {
-            final isLongest = call.callId == longestCall.callId;
+            final isLongest = call.callId == longestCall.callId && longestCall.durationSec > 0;
             return Card(
               child: ListTile(
                 leading: _CallTypeIcon(type: call.type),
                 title: Row(
                   children: [
-                    Text(
-                      '${dateFormatter.format(call.timestamp)} at ${timeFormatter.format(call.timestamp)}',
+                    Expanded(
+                      child: Text(
+                        '${dateFormatter.format(call.timestamp)} at ${timeFormatter.format(call.timestamp)}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     if (isLongest) ...[
                       const SizedBox(width: 8),
@@ -224,6 +226,16 @@ class ContactDetailScreen extends StatelessWidget {
       CallType.rejected => 'Rejected',
       CallType.unknown => 'Unknown',
     };
+  }
+
+  String _getAvatarInitial(String? name, String number) {
+    if (name != null && name.isNotEmpty) {
+      return name.substring(0, 1).toUpperCase();
+    }
+    if (number.isNotEmpty) {
+      return number.substring(0, 1).toUpperCase();
+    }
+    return '?';
   }
 }
 
