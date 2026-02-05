@@ -43,7 +43,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _loadAnalytics() async {
-    await ref.read(analyticsControllerProvider.notifier).loadAnalytics(
+    await ref
+        .read(analyticsControllerProvider.notifier)
+        .loadAnalytics(
           start: _dateFilter.start,
           end: _dateFilter.end,
           simFilter: _simFilter,
@@ -51,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _syncNow() async {
-    final repository = ref.read(callRepositoryProvider);
+    final repository = await ref.read(callRepositoryProvider.future);
     final prefs = await ref.read(sharedPreferencesProvider.future);
     try {
       await SyncService(repository, prefs).syncCallLogs();
@@ -59,14 +61,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sync failed: $error')),
+          SnackBar(
+            content: Text('Sync failed: $error'),
+          ),
         );
       }
     }
   }
 
   Future<void> _seedDemoData() async {
-    final repository = ref.read(callRepositoryProvider);
+    final repository = await ref.read(callRepositoryProvider.future);
     await DemoDataService(repository).seedDemoData();
     await _loadAnalytics();
   }
@@ -103,7 +107,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 await _seedDemoData();
               }
               if (value == 'enableContacts') {
-                final granted = await PermissionService().requestContactsPermission();
+                final granted = await PermissionService()
+                    .requestContactsPermission();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -117,7 +122,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 }
               }
               if (value == 'deleteAll') {
-                final repository = ref.read(callRepositoryProvider);
+                final repository = await ref.read(
+                  callRepositoryProvider.future,
+                );
                 await repository.clearAll();
                 await _loadAnalytics();
               }
@@ -266,17 +273,17 @@ class _FiltersBar extends StatelessWidget {
                       break;
                   }
                 }
-                onDateFilterChanged(DateRangeFilter(
-                  preset: preset,
-                  start: start,
-                  end: end,
-                ));
+                onDateFilterChanged(
+                  DateRangeFilter(preset: preset, start: start, end: end),
+                );
               },
               items: DateFilterPreset.values
-                  .map((preset) => DropdownMenuItem(
-                        value: preset,
-                        child: Text(_presetLabel(preset)),
-                      ))
+                  .map(
+                    (preset) => DropdownMenuItem(
+                      value: preset,
+                      child: Text(_presetLabel(preset)),
+                    ),
+                  )
                   .toList(),
             ),
             DropdownButton<SimFilter>(
@@ -285,10 +292,12 @@ class _FiltersBar extends StatelessWidget {
                 if (value != null) onSimFilterChanged(value);
               },
               items: SimFilter.values
-                  .map((filter) => DropdownMenuItem(
-                        value: filter,
-                        child: Text(_simLabel(filter)),
-                      ))
+                  .map(
+                    (filter) => DropdownMenuItem(
+                      value: filter,
+                      child: Text(_simLabel(filter)),
+                    ),
+                  )
                   .toList(),
             ),
             const _PermissionChip(),
@@ -325,12 +334,19 @@ class _PermissionChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(permissionStateProvider).when(
+    return ref
+        .watch(permissionStateProvider)
+        .when(
           data: (state) => Chip(
-            avatar: Icon(state.hasPermissions ? Icons.lock_open : Icons.lock_outline),
-            label: Text(state.hasPermissions ? 'Permissions granted' : 'Limited mode'),
-            backgroundColor:
-                state.hasPermissions ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+            avatar: Icon(
+              state.hasPermissions ? Icons.lock_open : Icons.lock_outline,
+            ),
+            label: Text(
+              state.hasPermissions ? 'Permissions granted' : 'Limited mode',
+            ),
+            backgroundColor: state.hasPermissions
+                ? Colors.green.withOpacity(0.1)
+                : Colors.orange.withOpacity(0.1),
           ),
           loading: () => const Chip(label: Text('Checking permissions...')),
           error: (error, _) => Chip(label: Text('Permission error: $error')),
@@ -419,10 +435,12 @@ class _TrendsTab extends StatelessWidget {
               lineBarsData: [
                 LineChartBarData(
                   spots: callBuckets.entries
-                      .map((entry) => FlSpot(
-                            entry.key.millisecondsSinceEpoch.toDouble(),
-                            entry.value.toDouble(),
-                          ))
+                      .map(
+                        (entry) => FlSpot(
+                          entry.key.millisecondsSinceEpoch.toDouble(),
+                          entry.value.toDouble(),
+                        ),
+                      )
                       .toList(),
                   isCurved: true,
                   dotData: const FlDotData(show: false),
@@ -434,7 +452,9 @@ class _TrendsTab extends StatelessWidget {
                     showTitles: true,
                     interval: const Duration(days: 7).inMilliseconds.toDouble(),
                     getTitlesWidget: (value, meta) => Text(
-                      formatter.format(DateTime.fromMillisecondsSinceEpoch(value.toInt())),
+                      formatter.format(
+                        DateTime.fromMillisecondsSinceEpoch(value.toInt()),
+                      ),
                       style: const TextStyle(fontSize: 10),
                     ),
                   ),
@@ -452,19 +472,21 @@ class _TrendsTab extends StatelessWidget {
           child: BarChart(
             BarChartData(
               barGroups: durationBuckets.entries
-                  .map((entry) => BarChartGroupData(
-                        x: entry.key.millisecondsSinceEpoch,
-                        barRods: [
-                          BarChartRodData(toY: entry.value.toDouble()),
-                        ],
-                      ))
+                  .map(
+                    (entry) => BarChartGroupData(
+                      x: entry.key.millisecondsSinceEpoch,
+                      barRods: [BarChartRodData(toY: entry.value.toDouble())],
+                    ),
+                  )
                   .toList(),
               titlesData: FlTitlesData(
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     getTitlesWidget: (value, meta) => Text(
-                      formatter.format(DateTime.fromMillisecondsSinceEpoch(value.toInt())),
+                      formatter.format(
+                        DateTime.fromMillisecondsSinceEpoch(value.toInt()),
+                      ),
                       style: const TextStyle(fontSize: 10),
                     ),
                   ),
@@ -519,7 +541,9 @@ class _InsightsTab extends StatelessWidget {
                 return BarChartGroupData(
                   x: index + 1,
                   barRods: [
-                    BarChartRodData(toY: (byWeekday[index + 1] ?? 0).toDouble()),
+                    BarChartRodData(
+                      toY: (byWeekday[index + 1] ?? 0).toDouble(),
+                    ),
                   ],
                 );
               }),
@@ -558,7 +582,9 @@ class _TopTab extends StatelessWidget {
         return Card(
           child: ListTile(
             title: Text(name?.isNotEmpty == true ? name! : entry.key),
-            subtitle: Text('${entry.value.length} calls · ${duration ~/ 60} min'),
+            subtitle: Text(
+              '${entry.value.length} calls · ${duration ~/ 60} min',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(

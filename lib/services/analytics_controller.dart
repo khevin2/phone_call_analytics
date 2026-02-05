@@ -19,18 +19,17 @@ class AnalyticsState {
 }
 
 final analyticsControllerProvider =
-    StateNotifierProvider<AnalyticsController, AsyncValue<AnalyticsState>>(
-  (ref) {
-    final repository = ref.watch(callRepositoryProvider);
-    return AnalyticsController(repository, AnalyticsService());
-  },
-);
+    StateNotifierProvider<AnalyticsController, AsyncValue<AnalyticsState>>((
+      ref,
+    ) {
+      return AnalyticsController(ref, AnalyticsService());
+    });
 
 class AnalyticsController extends StateNotifier<AsyncValue<AnalyticsState>> {
-  AnalyticsController(this.repository, this.analyticsService)
-      : super(const AsyncValue.loading());
+  AnalyticsController(this.ref, this.analyticsService)
+    : super(const AsyncValue.loading());
 
-  final CallRepository repository;
+  final Ref ref;
   final AnalyticsService analyticsService;
 
   Future<void> loadAnalytics({
@@ -40,6 +39,7 @@ class AnalyticsController extends StateNotifier<AsyncValue<AnalyticsState>> {
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
+      final repository = await ref.read(callRepositoryProvider.future);
       final calls = await repository.fetchCalls(
         start: start,
         end: end,
