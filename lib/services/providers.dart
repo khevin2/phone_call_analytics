@@ -8,14 +8,13 @@ final databaseProvider = FutureProvider<AppDatabase>((ref) async {
   return AppDatabase.open();
 });
 
-final callRepositoryProvider = Provider<CallRepository>((ref) {
-  final database = ref.watch(databaseProvider).value;
-  if (database == null) {
-    throw StateError('Database not ready');
-  }
+final callRepositoryProvider = FutureProvider<CallRepository>((ref) async {
+  final database = await ref.watch(databaseProvider.future);
   return CallRepository(database.db);
 });
 
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((
+  ref,
+) async {
   return SharedPreferences.getInstance();
 });
