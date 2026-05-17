@@ -36,7 +36,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported privately to the project maintainer at [cyusa@kheven.me](mailto:cyusa@kheven.me). If email is not practical, contact [@khevin2](https://github.com/khevin2) on GitHub. All complaints will be reviewed and investigated promptly and fairly.
 
 ## Enforcement Guidelines
 
